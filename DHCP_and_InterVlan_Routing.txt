@@ -1,0 +1,118 @@
+from netmiko import ConnectHandler
+from datetime import datetime
+
+# Dictionary containing unique configurations, VLANs, and OSPF settings for each switch
+switches = [
+    {
+        'device_type': 'cisco_ios', 
+        'ip': '10.10.43.2', 
+        'username': 'admin', 
+        'password': 'cisco', 
+        'secret': 'cisco', 
+        'global_delay_factor': 2,
+        'vlan_id': '10',
+        'vlan_name': 'HR',
+        'subnet_ip': '192.168.10.0',
+        'gateway_ip': '192.168.10.1',
+        'pool_name': 'POOL_HR',
+        'access_port': 'ethernet 0/1',
+        'ospf_net1': '192.168.10.0 0.0.0.255',
+        'ospf_net2': '10.0.0.0 0.255.255.255'
+    },
+    {
+        'device_type': 'cisco_ios', 
+        'ip': '10.10.33.2', 
+        'username': 'admin', 
+        'password': 'cisco', 
+        'secret': 'cisco', 
+        'global_delay_factor': 2,
+        'vlan_id': '20',
+        'vlan_name': 'Accounting',
+        'subnet_ip': '192.168.20.0',
+        'gateway_ip': '192.168.20.1',
+        'pool_name': 'POOL_ACC',
+        'access_port': 'ethernet 0/1',
+        'ospf_net1': '192.168.20.0 0.0.0.255',
+        'ospf_net2': '10.0.0.0 0.255.255.255'
+    },
+    {
+        'device_type': 'cisco_ios', 
+        'ip': '10.10.23.2', 
+        'username': 'admin', 
+        'password': 'cisco', 
+        'secret': 'cisco', 
+        'global_delay_factor': 2,
+        'vlan_id': '30',
+        'vlan_name': 'IT',
+        'subnet_ip': '192.168.30.0',
+        'gateway_ip': '192.168.30.1',
+        'pool_name': 'POOL_IT',
+        'access_port': 'ethernet 0/1',
+        'ospf_net1': '192.168.30.0 0.0.0.255',
+        'ospf_net2': '10.0.0.0 0.255.255.255'
+    },
+]
+
+print(f"=== Starting Network Configuration Push: {datetime.now()} ===\n")
+
+for device in switches:
+    ip_addr = device['ip']
+    
+    # List of configuration commands tailored for the current switch
+    config_commands = [
+        "ip routing",
+        
+        # 1. Create VLAN and Assign Name
+        f"vlan {device['vlan_id']}",
+        f"name {device['vlan_name']}",
+        "exit",
+        
+        # 2. Configure SVI (Gateway IP)
+        f"interface vlan {device['vlan_id']}",
+        f"ip address {device['gateway_ip']} 255.255.255.0",
+        "no shutdown",
+        "exit",
+        
+        # 3. DHCP Excluded Address (Reserve the gateway IP)
+        f"ip dhcp excluded-address {device['gateway_ip']}",
+        
+        # 4. Configure DHCP Pool
+        f"ip dhcp pool {device['pool_name']}",
+        f"network {device['subnet_ip']} 255.255.255.0",
+        f"default-router {device['gateway_ip']}",
+        "dns-server 8.8.8.8",
+        "exit",
+        
+        # 5. Configure Access Port for PCs
+        f"interface {device['access_port']}",
+        "switchport mode access",
+        f"switchport access vlan {device['vlan_id']}",
+        "no shutdown",
+        "exit",
+        
+        # 6. Configure OSPF Routing
+        "router ospf 1",
+        f"network {device['ospf_net1']} area 0",
+        f"network {device['ospf_net2']} area 0",
+        "exit"
+    ]
+    
+    try:
+        print(f"[*] Connecting and configuring Switch {ip_addr} (VLAN {device['vlan_id']} - {device['vlan_name']}) ...")
+        
+        # Filter out custom keys before passing parameters to ConnectHandler
+        connection_params = {
+            k: v for k, v in device.items() 
+            if k not in ['vlan_id', 'vlan_name', 'subnet_ip', 'gateway_ip', 'pool_name', 'access_port', 'ospf_net1', 'ospf_net2']
+        }
+        
+        with ConnectHandler(**connection_params) as net_connect:
+            net_connect.enable()
+            output = net_connect.send_config_set(config_commands, read_timeout=60)
+            net_connect.save_config()
+            print(f"[✔] Successfully configured and saved on {ip_addr}\n")
+            
+    except Exception as e:
+        print(f"[✘] Error on {ip_addr}: {e}\n")
+
+print("=== All Switches Configuration Process Completed ===")

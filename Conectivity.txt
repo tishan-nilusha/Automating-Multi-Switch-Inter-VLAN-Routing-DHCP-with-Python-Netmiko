@@ -1,0 +1,195 @@
+Network Connectivity Build Configurations
+
+1. Ubuntu PC Route Configuration
+--------------------------------
+# Add static route to reach the internal network segments via Router 1
+ip route add 10.10.0.0/16 via 192.168.42.2
+
+2. Core Router Configuration
+--------------------------------
+Router 1 (R1)
+conf t
+interface ethernet 0/3
+ ip address 192.168.42.2 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/0
+ ip address 10.10.12.1 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/1
+ ip address 10.10.13.1 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/2
+ ip address 10.10.14.1 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 1.1.1.1 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 1.1.1.1 0.0.0.0 area 0
+ network 192.168.42.0 0.0.0.255 area 0
+ network 10.10.12.0 0.0.0.255 area 0
+ network 10.10.13.0 0.0.0.255 area 0
+ network 10.10.14.0 0.0.0.255 area 0
+end
+
+3. Distribution Routers Configuration
+-------------------------------------
+Router 2 (R2)
+conf t
+interface ethernet 0/0
+ ip address 10.10.12.2 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/1
+ ip address 10.10.23.1 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 2.2.2.2 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 2.2.2.2 0.0.0.0 area 0
+ network 10.10.12.0 0.0.0.255 area 0
+ network 10.10.23.0 0.0.0.255 area 0
+end
+
+Router 3 (R3)
+conf t
+interface ethernet 0/0
+ ip address 10.10.13.2 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/1
+ ip address 10.10.33.1 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 3.3.3.3 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 3.3.3.3 0.0.0.0 area 0
+ network 10.10.13.0 0.0.0.255 area 0
+ network 10.10.33.0 0.0.0.255 area 0
+end
+
+Router 4 (R4)
+conf t
+interface ethernet 0/0
+ ip address 10.10.14.2 255.255.255.0
+ no shutdown
+exit
+interface ethernet 0/1
+ ip address 10.10.43.1 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 4.4.4.4 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 4.4.4.4 0.0.0.0 area 0
+ network 10.10.14.0 0.0.0.255 area 0
+ network 10.10.43.0 0.0.0.255 area 0
+end
+
+4. Layer 3 Switches Configuration
+---------------------------------
+L3 Switch 1 (IOU1 - connected via R4)
+conf t
+ip routing
+interface ethernet 0/0
+ no switchport
+ ip address 10.10.43.2 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 11.11.11.11 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 11.11.11.11 0.0.0.0 area 0
+ network 10.10.43.0 0.0.0.255 area 0
+end
+
+L3 Switch 2 (IOU2 - connected via R3)
+conf t
+ip routing
+interface ethernet 0/0
+ no switchport
+ ip address 10.10.33.2 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 22.22.22.22 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 22.22.22.22 0.0.0.0 area 0
+ network 10.10.33.0 0.0.0.255 area 0
+end
+
+L3 Switch 3 (IOU3 - connected via R2)
+conf t
+ip routing
+interface ethernet 0/0
+ no switchport
+ ip address 10.10.23.2 255.255.255.0
+ no shutdown
+exit
+interface loopback 0
+ ip address 33.33.33.33 255.255.255.255
+exit
+ip domain-name cisco.local
+crypto key generate rsa modulus 2048
+username admin privilege 15 secret cisco
+line vty 0 4
+ transport input ssh
+ login local
+exit
+router ospf 1
+ network 33.33.33.33 0.0.0.0 area 0
+ network 10.10.23.0 0.0.0.255 area 0
+end

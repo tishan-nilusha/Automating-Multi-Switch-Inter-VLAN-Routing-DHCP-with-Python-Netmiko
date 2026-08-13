@@ -17,18 +17,6 @@ A production-grade network automation framework built with **Python and Netmiko*
 * **📡 Automated DHCP Scope Management:** Deploys dynamic DHCP pools, network scopes, default routers, and excludes core gateway addresses for seamless IP allocation [cite: 1].
 * **🔄 Advanced OSPF Routing & Summarization:** Implements OSPF protocol with wildcard network statements (`10.0.0.0 0.255.255.255`) to handle multi-subnet connectivity efficiently [cite: 1].
 * **🔌 Robust Connectivity Framework:** Integrates complete base static routing and core router/switch build configurations for underlying network transport [cite: 1].
-
----
-
-## 🗺️ Script & Architecture Breakdown
-
-| Component / File | Description & Key Functions | Primary Capabilities |
-| :--- | :--- | :--- |
-| **`dhcpnew.py`** | Core Python Automation Script | Multi-device connection handling via Netmiko, dynamic dictionary data modeling, configuration batch pushing. |
-| **`Conectivity.txt`** | Base Topology Build & Setup | Ubuntu static routing, Core Router (R1), Distribution Routers (R2, R3, R4), and L3 Switch base configs [cite: 1]. |
-| **`DHCP_and_InterVlan_Routing.txt`** | Design Documentation | Notes and references regarding inter-VLAN routing and DHCP architecture [cite: 1]. |
-| **`Screenshot 2026-08-13 050410.png`** | GNS3 Topology Diagram | Visual layout of the automated multi-switch environment and connected client PCs [cite: 1]. |
-
 ---
 
 ## 📁 Repository Structure & Device Configurations

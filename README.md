@@ -16,14 +16,14 @@ A production-grade network automation framework built with **Python and Netmiko*
 * **🏢 Dynamic VLAN & SVI Provisioning:** Automatically provisions distinct VLANs (HR VLAN 10, Accounting VLAN 20, IT VLAN 30) along with their corresponding gateway SVI IP addresses .
 * **📡 Automated DHCP Scope Management:** Deploys dynamic DHCP pools, network scopes, default routers, and excludes core gateway addresses for seamless IP allocation .
 * **🔄 Advanced OSPF Routing & Summarization:** Implements OSPF protocol with wildcard network statements (`10.0.0.0 0.255.255.255`) to handle multi-subnet connectivity efficiently .
-* **🔌 Robust Connectivity Framework:** Integrates complete base static routing and core router/switch build configurations for underlying network transport .
+* **🔌 Robust Connectivity Framework:** Integrates complete base ospf routing and core router/switch build configurations for underlying network transport .
 ---
 
 ## 📁 Repository Structure & Device Configurations
 
 The complete project files and automation templates are organized as follows:
 
-* 📄 `Conectivity.txt` - Base router, switch, and static routing build configurations 
+* 📄 `Conectivity.txt` - Base routers, switchs, and ospf routing build configurations 
 * 📄 `DHCP_and_InterVlan_Routing.txt` - Main Python Netmiko automation script for switch provisioning
 * 🖼️ `Screenshot 2026-08-13 050410.png` - GNS3 network topology screenshot 
 

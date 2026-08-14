@@ -23,9 +23,8 @@ A production-grade network automation framework built with **Python and Netmiko*
 
 The complete project files and automation templates are organized as follows:
 
-* 📄 `dhcpnew.py` - Main Python Netmiko automation script for switch provisioning
 * 📄 `Conectivity.txt` - Base router, switch, and static routing build configurations 
-* 📄 `DHCP_and_InterVlan_Routing.txt` - Deployment notes and architecture details 
+* 📄 `DHCP_and_InterVlan_Routing.txt` - Main Python Netmiko automation script for switch provisioning
 * 🖼️ `Screenshot 2026-08-13 050410.png` - GNS3 network topology screenshot 
 
 ---
